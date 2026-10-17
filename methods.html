@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods &amp; limitations · Kelantan Flood Exposure of Health Facilities</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Methods &amp; limitations</h1>
+  <p class="sub"><a href="index.html">Back to map</a></p>
+  <p class="disclaimer" role="note">Exploratory analysis using public data. Not an official Ministry of Health Malaysia risk assessment.</p>
+</header>
+<article>
+<h2>Data</h2>
+<ul>
+  <li><strong>Facilities</strong>: <code>facilities_master.csv</code> from <a href="https://github.com/MoH-Malaysia/data-resources-public">MoH-Malaysia/data-resources-public</a>, commit <code>f79256f</code> (snapshot 31 Dec 2025). 429 Kelantan rows. Only a derived subset (code, name, type, district, coordinates, exposure fields) is republished here. The source repository has no LICENSE file.</li>
+  <li><strong>Flood extent</strong>: Copernicus Emergency Management Service, GloFAS Global Flood Monitoring (GFM) <em>ensemble flood extent</em> (Sentinel-1 SAR, 20 m), 62 STAC items from <code>stac.eodc.eu</code> between 25 Nov and 20 Dec 2024, merged as the union of all flooded pixels on a ~22 m grid. Scene list: <a href="data/gfm_scenes.csv">gfm_scenes.csv</a>.</li>
+  <li><strong>Boundaries</strong>: <a href="https://www.geoboundaries.org/">geoBoundaries</a> MYS ADM2 (CC BY 4.0), 11 Kelantan units, used for the state mask and map outline; MoH lists 10 districts (no separate Kecil Lojing).</li>
+  <li><strong>Basemap</strong>: © OpenStreetMap contributors.</li>
+</ul>
+<h2>Method</h2>
+<ol>
+  <li>Keep Kelantan rows; drop any point not covered by the Kelantan boundary.</li>
+  <li><em>Inside extent</em>: the facility's pixel is flooded in the union raster.</li>
+  <li><em>Distance</em>: metres to the nearest flooded pixel centre, in GDM2000 / Peninsula RSO (EPSG:3375); 0 when inside.</li>
+  <li><em>Within 500 m</em>: distance ≤ 500 m (includes inside).</li>
+  <li>District counts and percentages use the MoH <code>DAERAH</code> field. Code: <a href="https://github.com/ruhaifimd/kelantan-flood-health-facilities/tree/main/scripts">scripts/</a>.</li>
+</ol>
+<h2>Dropped records (3)</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Code</th><th>Name</th><th>District</th><th>Lat</th><th>Lon</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>21-03040173</td><td>KK PINTU GENG</td><td>Kota Bharu</td><td>5.98436</td><td>116.07734</td><td>Longitude places it in Sabah</td></tr>
+<tr><td>21-03010192</td><td>KD KEPALA BATAS</td><td>Bachok</td><td>5.51724</td><td>100.43149</td><td>Longitude places it in Penang/Kedah</td></tr>
+<tr><td>21-03080124</td><td>KD DALAM RHU</td><td>Pasir Puteh</td><td>5.82871</td><td>102.55423</td><td>Falls just offshore of the boundary</td></tr>
+</tbody></table></div>
+<h2>Limitations</h2>
+<ul>
+  <li><strong>Observed extent is not hazard probability.</strong> It shows where Sentinel-1 detected water during one event; it says nothing about return periods or future floods.</li>
+  <li>SAR misses water under dense vegetation and in built-up areas (radar shadow and layover), and satellite passes can miss the flood peak. Urban facilities are likely under-counted as "inside".</li>
+  <li>Coordinate precision varies (2–7 decimal places in the source; 21 records have ≤3 dp, i.e. roughly 100 m–1 km precision); a facility a few metres from water may be mis-classified. The 500 m flag is more robust than the inside/outside flag.</li>
+  <li>Exposure is not impact: building elevation, access roads and service disruption are not assessed.</li>
+  <li>The facility list is a 31 Dec 2025 snapshot; it does not reflect the facility set operating in 2024.</li>
+</ul>
+<h2>Licence notices</h2>
+<p>Contains modified Copernicus Emergency Management Service information 2024. The CEMS terms (<a href="https://global-flood.emergency.copernicus.eu/terms-of-use/">global-flood.emergency.copernicus.eu/terms-of-use</a>) grant free access for reproduction, distribution, communication to the public and adaptation, provided this notice is given; data is provided "as is" and is not an early warning.</p>
+</article>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+ "facilities_source_rows": 429,
+ "analysed": 426,
+ "dropped": 3,
+ "in_flood": 1,
+ "within_500m": 59,
+ "not_observed": 0,
+ "event_window": "2024-11-25/2024-12-20",
+ "gfm_items": 62,
+ "overlay_bounds": [
+  [
+   4.535924241388221,
+   101.32360000000001
+  ],
+  [
+   6.256199999999999,
+   102.676462817884
+  ]
+ ],
+ "moh_commit": "f79256f50f0da205c364072e39e2f2f0fabc7478"
+}
