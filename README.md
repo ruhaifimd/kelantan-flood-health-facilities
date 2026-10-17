@@ -27,8 +27,34 @@ Highest share within 500 m: Pasir Puteh (28.6%), Pasir Mas (26.7%), Tumpat (25.0
 ## Limitations
 Observed extent is not hazard probability; SAR under-detects urban and vegetated flooding; source coordinate precision varies (2–7 dp). See [methods](methods.html).
 
-## Sources & attribution
-- Facilities: [MoH-Malaysia/data-resources-public](https://github.com/MoH-Malaysia/data-resources-public) `facilities_master.csv`, snapshot 31 Dec 2025 (no LICENSE file in source repo; only a derived subset is republished).
-- Flood: Contains modified Copernicus Emergency Management Service information 2024 – GloFAS Global Flood Monitoring (GFM) ensemble flood extent. Terms: https://global-flood.emergency.copernicus.eu/terms-of-use/
-- Boundaries: [geoBoundaries](https://www.geoboundaries.org/) MYS ADM2, CC BY 4.0.
-- Basemap: © OpenStreetMap contributors.
+## Data sources
+
+### Health facilities
+- **Used for:** Facility points (name, type, district, coordinates)
+- **Publisher:** Ministry of Health Malaysia (KKM)
+- **Dataset:** GitHub repository [MoH-Malaysia/data-resources-public](https://github.com/MoH-Malaysia/data-resources-public), file [`facilities_master.csv`](https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv) (commit `f79256f`)
+- **Date:** Snapshot as registered on 31 Dec 2025; 429 Kelantan rows
+- **Licence:** No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 3 records excluded (coordinates outside Kelantan): KK Pintu Geng, KD Kepala Batas, KD Dalam Rhu – see [methods](methods.html#dropped).
+
+### Flood extent
+- **Used for:** Observed flood extent (inside / within 500 m)
+- **Publisher:** Copernicus Emergency Management Service (CEMS)
+- **Dataset:** GloFAS Global Flood Monitoring (GFM) ensemble observed flood extent from Sentinel-1 SAR, accessed via the EODC STAC API ([stac.eodc.eu](https://stac.eodc.eu/api/v1)); scene list [gfm_scenes.csv](data/gfm_scenes.csv)
+- **Date:** 62 scenes, 25 Nov – 20 Dec 2024, merged as “ever flooded”
+- **Licence:** Contains modified Copernicus Emergency Management Service information 2024. [CEMS GFM terms of use](https://global-flood.emergency.copernicus.eu/terms-of-use/)
+
+### District boundaries
+- **Used for:** State mask and district outlines
+- **Publisher:** geoBoundaries (William & Mary geoLab)
+- **Dataset:** MYS ADM2, full resolution, [`geoBoundaries-MYS-ADM2.geojson`](https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/MYS/ADM2/geoBoundaries-MYS-ADM2.geojson) (commit `9469f09`); [geoboundaries.org](https://www.geoboundaries.org/)
+- **Date:** geoBoundaries release at commit 9469f09
+- **Licence:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+### Basemap
+- **Used for:** Background map tiles
+- **Publisher:** OpenStreetMap contributors
+- **Dataset:** Standard tiles from `tile.openstreetmap.org`
+- **Date:** Live tiles at time of viewing
+- **Licence:** © OpenStreetMap contributors, [ODbL](https://www.openstreetmap.org/copyright)
+
+**How to cite:** Ruhaifi, M. (2026). *Kelantan Flood Exposure of Health Facilities* [Interactive map]. [https://ruhaifimd.github.io/kelantan-flood-health-facilities/](https://ruhaifimd.github.io/kelantan-flood-health-facilities/)
