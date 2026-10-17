@@ -30,7 +30,7 @@ Corrections are applied from [`scripts/overrides.csv`](scripts/overrides.csv) (s
 - `methods.html` – method, overrides, validation, dropped records, limitations
 
 ## Limitations
-Observed extent is not hazard probability; SAR under-detects urban and vegetated flooding; source coordinate precision varies (2–7 dp). See [methods](methods.html).
+Observed extent is not hazard probability; SAR under-detects urban and vegetated flooding (GFM exclusion mask: 304 of 428 facilities were never clearly observed at their location); source coordinate precision varies (2–7 dp). These counts come from the published ~22 m map grid; an audit sampling the native 20 m GFM grid gave 112 / 316, the same message (about 7 in 10 never clearly observed). See [methods](methods.html).
 
 ## Data sources
 
@@ -46,7 +46,7 @@ Observed extent is not hazard probability; SAR under-detects urban and vegetated
 - **Used for:** Observed flood extent (inside / within 500 m)
 - **Publisher:** Copernicus Emergency Management Service (CEMS)
 - **Dataset:** GloFAS Global Flood Monitoring (GFM) ensemble observed flood extent from Sentinel-1 SAR, accessed via the EODC STAC API ([stac.eodc.eu](https://stac.eodc.eu/api/v1)); scene list [gfm_scenes.csv](data/gfm_scenes.csv)
-- **Date:** 62 scenes, 25 Nov – 20 Dec 2024, merged as “ever flooded”
+- **Date:** 62 GFM scenes match 25 Nov – 20 Dec 2024; only 28 contain Kelantan data (6 dates, 3 orbit tracks; one pass at the flood peak, 29 Nov 2024). They are merged as “ever flooded”
 - **Licence:** Contains modified Copernicus Emergency Management Service information 2024. [CEMS GFM terms of use](https://global-flood.emergency.copernicus.eu/terms-of-use/)
 
 ### District boundaries

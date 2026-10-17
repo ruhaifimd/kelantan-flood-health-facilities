@@ -4,7 +4,7 @@
  "dropped": 1,
  "in_flood": 1,
  "within_500m": 59,
- "not_observed": 0,
+ "not_observed": 304,
  "event_window": "2024-11-25/2024-12-20",
  "gfm_items": 62,
  "overlay_bounds": [

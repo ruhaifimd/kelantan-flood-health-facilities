@@ -65,15 +65,21 @@ def flood_union(bounds):
         with rasterio.open(out) as r:
             return r.read(1), r.read(2), T
     flood = np.zeros((H, W), bool)
-    obs = np.zeros((H, W), bool)
-    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", GDAL_HTTP_MAX_RETRY="4"):
+    obs = np.zeros((H, W), np.uint8)  # count of clear (covered, not excluded) passes
+    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", GDAL_HTTP_MAX_RETRY="4", GDAL_HTTP_TIMEOUT="60"):
         for k, it in enumerate(items):
             with rasterio.open(it.assets["ensemble_flood_extent"].href) as src, \
                  WarpedVRT(src, crs="EPSG:4326", transform=T, width=W, height=H,
                            resampling=Resampling.nearest, nodata=255) as v:
                 a = v.read(1)
+            with rasterio.open(it.assets["exclusion_mask"].href) as src, \
+                 WarpedVRT(src, crs="EPSG:4326", transform=T, width=W, height=H,
+                           resampling=Resampling.nearest, nodata=255) as v:
+                x = v.read(1)
             flood |= a == 1
-            obs |= a <= 1   # 0/1 = valid observation; 255 = no data / GFM exclusion mask
+            # ensemble 255 = no Sentinel-1 coverage; excluded pixels are 0 in the ensemble,
+            # so exclusion comes from the separate exclusion_mask band (1 = excluded)
+            obs += (a <= 1) & (x == 0)
             print(f"  {k + 1}/{len(items)} {it.id} flooded={int((a == 1).sum())}")
     with rasterio.open(out, "w", driver="GTiff", width=W, height=H, count=2, dtype="uint8", crs="EPSG:4326",
                        transform=T, compress="deflate") as d:
@@ -122,7 +128,7 @@ def main():
     with rasterio.open(os.path.join(DATA, "flood_extent_gfm_2024.tif"), "w", driver="GTiff",
                        width=flood.shape[1], height=flood.shape[0], count=1, dtype="uint8", crs="EPSG:4326",
                        transform=T, compress="deflate", predictor=2, nodata=255) as d:
-        d.write(np.where(flood == 1, 1, np.where(obs == 1, 0, 255)).astype("uint8"), 1)
+        d.write(np.where(flood == 1, 1, np.where(obs > 0, 0, 255)).astype("uint8"), 1)
 
     # --- exposure: point-in-pixel + distance to nearest flooded pixel centre ---
     tr = Transformer.from_crs("EPSG:4326", METRIC, always_xy=True)
@@ -142,7 +148,7 @@ def main():
         feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon, lat]}, "properties": {
             "code": r["KOD_FASILITI"], "name": r["NAMA"], "source_name": r["source_name"], "group": group(r), "type": r["JENIS_FASILITI"],
             "district": district, "in_flood": inside, "dist_m": dist_m, "within_500m": dist_m <= NEAR_M,
-            "observed": bool(obs[row, col]), "coord_source": r["coord_source"], "note": r["note"], "coord_dp": min(len(r["LATITUD"].split(".")[-1]),
+            "observed": bool(obs[row, col]), "obs_n": int(obs[row, col]), "coord_source": r["coord_source"], "note": r["note"], "coord_dp": min(len(r["LATITUD"].split(".")[-1]),
                                                              len(r["LONGITUD"].split(".")[-1]))}})
     json.dump({"type": "FeatureCollection", "features": feats},
               open(os.path.join(DATA, "facilities.geojson"), "w"), ensure_ascii=False, separators=(",", ":"))

@@ -28,4 +28,10 @@ with rasterio.open(os.path.join(D, "flood_extent_gfm_2024.tif")) as r:
         assert p["within_500m"] == (p["dist_m"] <= 500), p
         assert p["in_flood"] or p["dist_m"] > 0, p
         print(f"ok {p['name']:<40} pixel={v} dist={p['dist_m']}m")
+# observation status honours the GFM exclusion mask (map grid: 124 observed / 304 never clearly observed)
+P = [f["properties"] for f in fs]
+assert sum(p["observed"] for p in P) == 124 and s["not_observed"] == 304, s
+assert all(p["observed"] == (p["obs_n"] > 0) for p in P)
+assert all(p["observed"] for p in P if p["in_flood"])
+assert s["in_flood"] == 1 and s["within_500m"] == 59, s
 print("all checks passed")
