@@ -63,4 +63,4 @@ Observed extent is not hazard probability; SAR under-detects urban and vegetated
 - **Date:** Live tiles at time of viewing
 - **Licence:** © OpenStreetMap contributors, [ODbL](https://www.openstreetmap.org/copyright)
 
-**How to cite:** Ruhaifi, M. (2026). *Kelantan Flood Exposure of Health Facilities* [Interactive map]. [https://ruhaifimd.github.io/kelantan-flood-health-facilities/](https://ruhaifimd.github.io/kelantan-flood-health-facilities/)
+**How to cite:** Muhammad Ruhaifi M.S (2026). *Kelantan Flood Exposure of Health Facilities* [Interactive map]. [https://ruhaifimd.github.io/kelantan-flood-health-facilities/](https://ruhaifimd.github.io/kelantan-flood-health-facilities/)
