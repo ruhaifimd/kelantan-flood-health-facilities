@@ -2,10 +2,10 @@ code,field,original,new,source
 21-03040173,LATITUD,5.9843644,6.1016354,"Source longitude placed it in Sabah. Google Maps place 'Klinik Kesihatan Pintu Geng, D111, Kampung Pintu Gang, 15100 Kota Bharu' (0x31b6af8b5b287d49:0x5989977f8b178b61); location verified by author (MOH medical officer)"
 21-03040173,LONGITUD,116.077344,102.2305135,same as above
 21-03040173,coord_source,source,"corrected (Google Maps, verified by author)",
-21-03080124,LATITUD,5.8287063,5.8460858,"Source point outside Kelantan; snapped to nearest point on the Kelantan boundary (geoBoundaries ADM2, EPSG:3375) moved 30 m inland; shift 2982 m"
-21-03080124,LONGITUD,102.55423,102.5336464,same as above
-21-03080124,coord_source,source,adjusted to nearest land (source point offshore),
-21-03080124,note,,"Source point lies ~3 km outside Kelantan (Kuala Besut area, Besut, Terengganu); adjusted position is approximate",
+21-03080124,LATITUD,5.8287063,5.853368,"Klinik Desa Dalam Rhu, Kampung Dalam Rhu, 16700 Cherang Ruku, Kelantan (Google Maps place id 0x31b6ebe552632581:0x9ca209c02727efe6); location verified by author"
+21-03080124,LONGITUD,102.55423,102.5190078,same as above
+21-03080124,coord_source,source,"corrected (Google Maps, verified by author)",
+21-03080124,note,,"Original source coordinate was outside Kelantan and has been replaced with the verified location",
 21-03010039,NAMA,KK BERIS KUBOR BESAR,KK Beris,Official MOH Klinik Kesihatan list (moh.gov.my); address Kubor Besar
 21-03010039,note,,"Official name KK Beris; address Kubor Besar, Bachok",
 21-03040043,NAMA,KK PEROL,KK Cabang 3 Perol,Official MOH Klinik Kesihatan list (moh.gov.my)

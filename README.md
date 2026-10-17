@@ -19,7 +19,7 @@ Which public health facilities in Kelantan sat inside, or within 500 m of, the f
 Highest share within 500 m: Pasir Puteh (27.8%), Pasir Mas (26.7%), Tumpat (25.0%). Full table: [`data/district_summary.csv`](data/district_summary.csv).
 
 ## Corrections and validation
-Corrections are applied from [`scripts/overrides.csv`](scripts/overrides.csv) (source CSV untouched): KK Pintu Geng coordinate corrected (Google Maps, verified by author); KD Dalam Rhu moved 2,982 m to the nearest Kelantan land; KK Beris Kubor Besar → KK Beris and KK Perol → KK Cabang 3 Perol (official names); Unit Terapi Cara Kerja Ketereh retyped Other / unit. Cross-match with the official MOH KK list: 114 official, 107 exact matches. KK Baroh Pial and KK Bukit Gading are listed as Klinik Desa on moh.gov.my but retained as Klinik Kesihatan per local verification by the author.
+Corrections are applied from [`scripts/overrides.csv`](scripts/overrides.csv) (source CSV untouched): KK Pintu Geng coordinate corrected (Google Maps, verified by author); KD Dalam Rhu coordinate replaced with its verified location (Google Maps, verified by author); KK Beris Kubor Besar → KK Beris and KK Perol → KK Cabang 3 Perol (official names); Unit Terapi Cara Kerja Ketereh retyped Other / unit. Cross-match with the official MOH KK list: 114 official, 107 exact matches. KK Baroh Pial and KK Bukit Gading are listed as Klinik Desa on moh.gov.my but retained as Klinik Kesihatan per local verification by the author.
 
 **Known data gap:** 4 official KK are missing from the MOH dataset and are not mapped: KK Kubang Kual, KK Lojing, KK Panji, KK Wakaf Che Yeh. See [methods](methods.html#validation).
 
