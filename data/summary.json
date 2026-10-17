@@ -1,7 +1,7 @@
 {
  "facilities_source_rows": 429,
- "analysed": 426,
- "dropped": 3,
+ "analysed": 428,
+ "dropped": 1,
  "in_flood": 1,
  "within_500m": 59,
  "not_observed": 0,

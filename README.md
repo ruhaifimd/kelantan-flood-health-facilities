@@ -11,18 +11,23 @@ Which public health facilities in Kelantan sat inside, or within 500 m of, the f
 | | Count |
 |---|---|
 | Kelantan facilities in source | 429 |
-| Dropped (coordinates outside Kelantan) | 3 |
-| Analysed | 426 |
+| Dropped (coordinates outside Kelantan) | 1 |
+| Analysed | 428 |
 | Inside observed flood extent | 1 |
 | Within 500 m of observed flooding | 59 (13.8%) |
 
-Highest share within 500 m: Pasir Puteh (28.6%), Pasir Mas (26.7%), Tumpat (25.0%). Full table: [`data/district_summary.csv`](data/district_summary.csv).
+Highest share within 500 m: Pasir Puteh (27.8%), Pasir Mas (26.7%), Tumpat (25.0%). Full table: [`data/district_summary.csv`](data/district_summary.csv).
+
+## Corrections and validation
+Corrections are applied from [`scripts/overrides.csv`](scripts/overrides.csv) (source CSV untouched): KK Pintu Geng coordinate corrected (Google Maps, verified by author); KD Dalam Rhu moved 2,982 m to the nearest Kelantan land; KK Beris Kubor Besar → KK Beris and KK Perol → KK Cabang 3 Perol (official names); Unit Terapi Cara Kerja Ketereh retyped Other / unit. Cross-match with the official MOH KK list: 114 official, 107 exact matches. KK Baroh Pial and KK Bukit Gading are listed as Klinik Desa on moh.gov.my but retained as Klinik Kesihatan per local verification by the author.
+
+**Known data gap:** 4 official KK are missing from the MOH dataset and are not mapped: KK Kubang Kual, KK Lojing, KK Panji, KK Wakaf Che Yeh. See [methods](methods.html#validation).
 
 ## Files
 - `data/facilities.geojson` – per facility: name, type, district, lat/lon, `in_flood`, `dist_m`, `within_500m`
 - `data/district_summary.csv`, `data/dropped.csv`, `data/gfm_scenes.csv`, `data/flood_extent_gfm_2024.tif` (1 flooded, 0 dry, 255 no data)
-- `scripts/pipeline.py` – rebuilds `data/` (`python scripts/pipeline.py`); `scripts/check.py` – assert spot-check of 5 facilities
-- `methods.html` – method, dropped records, limitations
+- `scripts/overrides.csv` – documented corrections; `scripts/pipeline.py` – rebuilds `data/` (`python scripts/pipeline.py`); `scripts/check.py` – assert spot-check of 7 facilities
+- `methods.html` – method, overrides, validation, dropped records, limitations
 
 ## Limitations
 Observed extent is not hazard probability; SAR under-detects urban and vegetated flooding; source coordinate precision varies (2–7 dp). See [methods](methods.html).
@@ -34,7 +39,8 @@ Observed extent is not hazard probability; SAR under-detects urban and vegetated
 - **Publisher:** Ministry of Health Malaysia (KKM)
 - **Dataset:** GitHub repository [MoH-Malaysia/data-resources-public](https://github.com/MoH-Malaysia/data-resources-public), file [`facilities_master.csv`](https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv) (commit `f79256f`)
 - **Date:** Snapshot as registered on 31 Dec 2025; 429 Kelantan rows
-- **Licence:** No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 3 records excluded (coordinates outside Kelantan): KK Pintu Geng, KD Kepala Batas, KD Dalam Rhu – see [methods](methods.html#dropped).
+- **Licence:** No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 1 record excluded (coordinates in Penang/Kedah): KD Kepala Batas. 2 coordinates corrected (KK Pintu Geng, KD Dalam Rhu) – see [methods](methods.html#overrides).
+- **Validated against:** MOH official Klinik Kesihatan list ([moh.gov.my](https://www.moh.gov.my/fasiliti-kesihatan/klinik-kesihatan/kelantan)), checked 17 Oct 2026
 
 ### Flood extent
 - **Used for:** Observed flood extent (inside / within 500 m)

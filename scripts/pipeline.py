@@ -98,6 +98,14 @@ def main():
     text = open(fetch(MOH_URL, "facilities_master.csv"), encoding="utf-8-sig").read()
     rows = [r for r in csv.DictReader(io.StringIO(text)) if r["NEGERI"] == "KELANTAN"]
     print("Kelantan rows:", len(rows))
+    # documented corrections (scripts/overrides.csv); source CSV stays untouched
+    by_code = {r["KOD_FASILITI"]: r for r in rows}
+    for r in rows:
+        r.update(source_name=r["NAMA"], coord_source="source", note="")
+    for o in csv.DictReader(open(os.path.join(ROOT, "scripts", "overrides.csv"), encoding="utf-8")):
+        r = by_code[o["code"]]
+        assert r[o["field"]] == o["original"], (o, r[o["field"]])  # source drifted -> re-check override
+        r[o["field"]] = o["new"]
     keep, dropped = [], []
     for r in rows:
         lat, lon = float(r["LATITUD"]), float(r["LONGITUD"])
@@ -132,9 +140,9 @@ def main():
         dist_m = 0 if inside else int(round(float(dist[0])))
         district = r["DAERAH"].replace("JAJAHAN ", "").title()
         feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon, lat]}, "properties": {
-            "code": r["KOD_FASILITI"], "name": r["NAMA"], "group": group(r), "type": r["JENIS_FASILITI"],
+            "code": r["KOD_FASILITI"], "name": r["NAMA"], "source_name": r["source_name"], "group": group(r), "type": r["JENIS_FASILITI"],
             "district": district, "in_flood": inside, "dist_m": dist_m, "within_500m": dist_m <= NEAR_M,
-            "observed": bool(obs[row, col]), "coord_dp": min(len(r["LATITUD"].split(".")[-1]),
+            "observed": bool(obs[row, col]), "coord_source": r["coord_source"], "note": r["note"], "coord_dp": min(len(r["LATITUD"].split(".")[-1]),
                                                              len(r["LONGITUD"].split(".")[-1]))}})
     json.dump({"type": "FeatureCollection", "features": feats},
               open(os.path.join(DATA, "facilities.geojson"), "w"), ensure_ascii=False, separators=(",", ":"))

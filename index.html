@@ -10,7 +10,7 @@
 <body>
 <header>
   <h1>Kelantan Flood Exposure of Health Facilities</h1>
-  <p class="sub">426 public health facilities vs. Copernicus GFM observed flood extent, 25 Nov – 20 Dec 2024. <a href="methods.html">Methods &amp; limitations</a></p>
+  <p class="sub">428 public health facilities vs. Copernicus GFM observed flood extent, 25 Nov – 20 Dec 2024. <a href="methods.html">Methods &amp; limitations</a></p>
   <p class="disclaimer" role="note">Exploratory analysis using public data. Not an official Ministry of Health Malaysia risk assessment.</p>
 </header>
 <main>
@@ -29,7 +29,7 @@
     <h2 id="sources-h">Data sources</h2>
     <div class="srcgrid">
     <div class="src"><h3>Health facilities</h3><dl>
-      <dt>Used for</dt><dd>Facility points (name, type, district, coordinates)</dd><dt>Publisher</dt><dd>Ministry of Health Malaysia (KKM)</dd><dt>Dataset</dt><dd>GitHub repository <a href="https://github.com/MoH-Malaysia/data-resources-public">MoH-Malaysia/data-resources-public</a>, file <a href="https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv"><code>facilities_master.csv</code></a> (commit <code>f79256f</code>)</dd><dt>Date</dt><dd>Snapshot as registered on 31 Dec 2025; 429 Kelantan rows</dd><dt>Licence</dt><dd>No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 3 records excluded (coordinates outside Kelantan): KK Pintu Geng, KD Kepala Batas, KD Dalam Rhu &ndash; see <a href="methods.html#dropped">methods</a>.</dd>
+      <dt>Used for</dt><dd>Facility points (name, type, district, coordinates)</dd><dt>Publisher</dt><dd>Ministry of Health Malaysia (KKM)</dd><dt>Dataset</dt><dd>GitHub repository <a href="https://github.com/MoH-Malaysia/data-resources-public">MoH-Malaysia/data-resources-public</a>, file <a href="https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv"><code>facilities_master.csv</code></a> (commit <code>f79256f</code>)</dd><dt>Date</dt><dd>Snapshot as registered on 31 Dec 2025; 429 Kelantan rows</dd><dt>Licence</dt><dd>No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 1 record excluded (coordinates in Penang/Kedah): KD Kepala Batas. 2 coordinates corrected (KK Pintu Geng, KD Dalam Rhu) &ndash; see <a href="methods.html#overrides">methods</a>.</dd><dt>Validated against</dt><dd>MOH official Klinik Kesihatan list (<a href="https://www.moh.gov.my/fasiliti-kesihatan/klinik-kesihatan/kelantan">moh.gov.my</a>), checked 17 Oct 2026</dd>
     </dl></div>
     <div class="src"><h3>Flood extent</h3><dl>
       <dt>Used for</dt><dd>Observed flood extent (inside / within 500 m)</dd><dt>Publisher</dt><dd>Copernicus Emergency Management Service (CEMS)</dd><dt>Dataset</dt><dd>GloFAS Global Flood Monitoring (GFM) ensemble observed flood extent from Sentinel-1 SAR, accessed via the EODC STAC API (<a href="https://stac.eodc.eu/api/v1">stac.eodc.eu</a>); scene list <a href="data/gfm_scenes.csv">gfm_scenes.csv</a></dd><dt>Date</dt><dd>62 scenes, 25 Nov &ndash; 20 Dec 2024, merged as &ldquo;ever flooded&rdquo;</dd><dt>Licence</dt><dd>Contains modified Copernicus Emergency Management Service information 2024. <a href="https://global-flood.emergency.copernicus.eu/terms-of-use/">CEMS GFM terms of use</a></dd>
@@ -83,7 +83,10 @@ function draw() {
     pointToLayer: (f, ll) => L.circleMarker(ll, {radius: 5, weight: 1, color: '#fff', fillOpacity: 0.95, fillColor: C[cls(f.properties)]}),
     onEachFeature: (f, l) => { const p = f.properties;
       l.bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.group)} (${esc(p.type)})<br>District: ${esc(p.district)}<br>` +
-        `${label[cls(p)]}<br>Nearest flooded pixel: ${p.dist_m.toLocaleString()} m`); }
+        `${label[cls(p)]}<br>Nearest flooded pixel: ${p.dist_m.toLocaleString()} m` +
+        (p.name !== p.source_name ? `<br>Source name: ${esc(p.source_name)}` : '') +
+        (p.coord_source !== 'source' ? `<br>Coordinates: ${esc(p.coord_source)}` : '') +
+        (p.note ? `<br>Note: ${esc(p.note)}` : '')); }
   }).addTo(map);
   const n = sel.filter(f => f.properties.within_500m).length;
   document.getElementById('count').textContent = `${sel.length} shown · ${n} within 500 m`;

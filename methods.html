@@ -17,7 +17,7 @@
     <h2 id="sources-h">Data sources</h2>
     <div class="srcgrid">
     <div class="src"><h3>Health facilities</h3><dl>
-      <dt>Used for</dt><dd>Facility points (name, type, district, coordinates)</dd><dt>Publisher</dt><dd>Ministry of Health Malaysia (KKM)</dd><dt>Dataset</dt><dd>GitHub repository <a href="https://github.com/MoH-Malaysia/data-resources-public">MoH-Malaysia/data-resources-public</a>, file <a href="https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv"><code>facilities_master.csv</code></a> (commit <code>f79256f</code>)</dd><dt>Date</dt><dd>Snapshot as registered on 31 Dec 2025; 429 Kelantan rows</dd><dt>Licence</dt><dd>No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 3 records excluded (coordinates outside Kelantan): KK Pintu Geng, KD Kepala Batas, KD Dalam Rhu &ndash; see <a href="methods.html#dropped">methods</a>.</dd>
+      <dt>Used for</dt><dd>Facility points (name, type, district, coordinates)</dd><dt>Publisher</dt><dd>Ministry of Health Malaysia (KKM)</dd><dt>Dataset</dt><dd>GitHub repository <a href="https://github.com/MoH-Malaysia/data-resources-public">MoH-Malaysia/data-resources-public</a>, file <a href="https://github.com/MoH-Malaysia/data-resources-public/blob/f79256f/facilities_master.csv"><code>facilities_master.csv</code></a> (commit <code>f79256f</code>)</dd><dt>Date</dt><dd>Snapshot as registered on 31 Dec 2025; 429 Kelantan rows</dd><dt>Licence</dt><dd>No LICENSE file in the source repository; its README requests attribution. Only a derived Kelantan subset (code, name, type, district, coordinates, exposure fields) is republished here. 1 record excluded (coordinates in Penang/Kedah): KD Kepala Batas. 2 coordinates corrected (KK Pintu Geng, KD Dalam Rhu) &ndash; see <a href="methods.html#overrides">methods</a>.</dd><dt>Validated against</dt><dd>MOH official Klinik Kesihatan list (<a href="https://www.moh.gov.my/fasiliti-kesihatan/klinik-kesihatan/kelantan">moh.gov.my</a>), checked 17 Oct 2026</dd>
     </dl></div>
     <div class="src"><h3>Flood extent</h3><dl>
       <dt>Used for</dt><dd>Observed flood extent (inside / within 500 m)</dd><dt>Publisher</dt><dd>Copernicus Emergency Management Service (CEMS)</dd><dt>Dataset</dt><dd>GloFAS Global Flood Monitoring (GFM) ensemble observed flood extent from Sentinel-1 SAR, accessed via the EODC STAC API (<a href="https://stac.eodc.eu/api/v1">stac.eodc.eu</a>); scene list <a href="data/gfm_scenes.csv">gfm_scenes.csv</a></dd><dt>Date</dt><dd>62 scenes, 25 Nov &ndash; 20 Dec 2024, merged as &ldquo;ever flooded&rdquo;</dd><dt>Licence</dt><dd>Contains modified Copernicus Emergency Management Service information 2024. <a href="https://global-flood.emergency.copernicus.eu/terms-of-use/">CEMS GFM terms of use</a></dd>
@@ -34,20 +34,39 @@
 <p class="note">Flood union is computed on a ~22 m grid. geoBoundaries has 11 Kelantan ADM2 units; MoH lists 10 districts (no separate Kecil Lojing).</p>
 <h2>Method</h2>
 <ol>
-  <li>Keep Kelantan rows; drop any point not covered by the Kelantan boundary.</li>
+  <li>Keep Kelantan rows; apply the documented <a href="#overrides">overrides</a> (<code>scripts/overrides.csv</code>; the source CSV is not edited); drop any point not covered by the Kelantan boundary.</li>
   <li><em>Inside extent</em>: the facility's pixel is flooded in the union raster.</li>
   <li><em>Distance</em>: metres to the nearest flooded pixel centre, in GDM2000 / Peninsula RSO (EPSG:3375); 0 when inside.</li>
   <li><em>Within 500 m</em>: distance ≤ 500 m (includes inside).</li>
   <li>District counts and percentages use the MoH <code>DAERAH</code> field. Code: <a href="https://github.com/ruhaifimd/kelantan-flood-health-facilities/tree/main/scripts">scripts/</a>.</li>
 </ol>
-<h2 id="dropped">Dropped records (3)</h2>
+<h2 id="dropped">Dropped records (1)</h2>
 <div class="tablewrap"><table>
 <thead><tr><th>Code</th><th>Name</th><th>District</th><th>Lat</th><th>Lon</th><th>Reason</th></tr></thead>
 <tbody>
-<tr><td>21-03040173</td><td>KK PINTU GENG</td><td>Kota Bharu</td><td>5.98436</td><td>116.07734</td><td>Longitude places it in Sabah</td></tr>
-<tr><td>21-03010192</td><td>KD KEPALA BATAS</td><td>Bachok</td><td>5.51724</td><td>100.43149</td><td>Longitude places it in Penang/Kedah</td></tr>
-<tr><td>21-03080124</td><td>KD DALAM RHU</td><td>Pasir Puteh</td><td>5.82871</td><td>102.55423</td><td>Falls just offshore of the boundary</td></tr>
+<tr><td>21-03010192</td><td>KD KEPALA BATAS</td><td>Bachok</td><td>5.51724</td><td>100.43149</td><td>Longitude places it in Penang/Kedah; no verified correction</td></tr>
 </tbody></table></div>
+<h2 id="overrides">Overrides</h2>
+<p>Applied in <code>scripts/pipeline.py</code> from <a href="https://github.com/ruhaifimd/kelantan-flood-health-facilities/blob/main/scripts/overrides.csv"><code>scripts/overrides.csv</code></a>. Map popups show the source name, coordinate source and note where they differ.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Facility</th><th>Field</th><th>Original</th><th>New</th><th>Source / reason</th></tr></thead>
+<tbody>
+<tr><td>KK PINTU GENG (21-03040173)</td><td>Coordinates</td><td>5.9843644, 116.077344 (Sabah)</td><td>6.1016354, 102.2305135</td><td>Google Maps place &ldquo;Klinik Kesihatan Pintu Geng, D111, Kampung Pintu Gang, 15100 Kota Bharu&rdquo;; location verified by the author (MOH medical officer). Flag: corrected (Google Maps, verified by author)</td></tr>
+<tr><td>KD DALAM RHU (21-03080124)</td><td>Coordinates</td><td>5.8287063, 102.55423</td><td>5.8460858, 102.5336464</td><td>Source point ~3 km outside Kelantan (Kuala Besut area, Terengganu). Snapped to the nearest point on the Kelantan boundary and moved 30 m inland; shift 2,982 m; position approximate. Flag: adjusted to nearest land (source point offshore)</td></tr>
+<tr><td>KK BERIS KUBOR BESAR (21-03010039)</td><td>Display name</td><td>KK BERIS KUBOR BESAR</td><td>KK Beris</td><td>Official MOH list (address Kubor Besar, Bachok). Source name kept in <code>source_name</code></td></tr>
+<tr><td>KK PEROL (21-03040043)</td><td>Display name</td><td>KK PEROL</td><td>KK Cabang 3 Perol</td><td>Official MOH list. Source name kept in <code>source_name</code></td></tr>
+<tr><td>UNIT TERAPI CARA KERJA KETEREH (21-03020816)</td><td>Type</td><td>Klinik Kesihatan</td><td>Other / unit (not counted as KK)</td><td>Mislabelled as Klinik Kesihatan in source; not on the official KK list. The official list has KK Ketereh, but it is not verified to be the same site, so the unit is not renamed</td></tr>
+</tbody></table></div>
+<h2 id="validation">Validation against official MOH list</h2>
+<p>Klinik Kesihatan in the dataset were cross-matched by name and district against the <a href="https://www.moh.gov.my/fasiliti-kesihatan/klinik-kesihatan/kelantan">MOH official Klinik Kesihatan list for Kelantan</a> (page last updated 28 Oct 2025; checked 17 Oct 2026).</p>
+<ul>
+  <li>114 official KK; 107 match exactly by name, all in the same district (including KK Pintu Geng, so it exists; only its source coordinate was wrong).</li>
+  <li>Renamed to the official name: KK Beris Kubor Besar &rarr; KK Beris; KK Perol &rarr; KK Cabang 3 Perol.</li>
+  <li>KK Baroh Pial and KK Bukit Gading: moh.gov.my lists these two as Klinik Desa; retained as Klinik Kesihatan per local verification by the author (MOH medical officer).</li>
+  <li>Unit Terapi Cara Kerja Ketereh is labelled Klinik Kesihatan in the source; retyped as Other / unit (see overrides).</li>
+  <li><strong>Known data gap:</strong> 4 official KK are missing from the MOH dataset entirely and are not on the map: KK Kubang Kual (Pasir Mas), KK Lojing (Gua Musang), KK Panji (Kota Bharu), KK Wakaf Che Yeh (Kota Bharu). No coordinates were invented for them.</li>
+  <li>Only Klinik Kesihatan were validated. Hospitals, Klinik Desa and dental clinics were not checked against official lists.</li>
+</ul>
 <h2>Limitations</h2>
 <ul>
   <li><strong>Observed extent is not hazard probability.</strong> It shows where Sentinel-1 detected water during one event; it says nothing about return periods or future floods.</li>
