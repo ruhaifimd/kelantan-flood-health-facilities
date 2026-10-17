@@ -36,3 +36,9 @@ article{max-width:820px;margin:0 auto;padding:12px 16px}
 .src dd{margin:0}
 .sources a,.cite a{text-decoration:underline;font-weight:500}
 .cite{font-size:.9rem;overflow-wrap:anywhere}
+.list{max-height:60vh;overflow:auto}
+.list th,.list td{text-align:left}
+.list td{padding:0 8px;height:44px}
+.list tbody tr:last-child{font-weight:400}
+.list button{font:inherit;color:#087e80;background:none;border:0;padding:0;margin:0;min-height:44px;text-align:left;text-decoration:underline;cursor:pointer}
+.list button:focus-visible{outline:3px solid #087e80;outline-offset:2px}

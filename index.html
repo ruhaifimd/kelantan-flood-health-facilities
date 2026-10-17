@@ -21,6 +21,11 @@
   </section>
   <div id="map" role="region" aria-label="Map of facilities and flood extent"></div>
   <section>
+    <h2>Facilities to prioritise for preparedness review</h2>
+    <p class="note">Listed for field verification of flood preparedness, not a risk ranking. Order: inside the observed flood extent, then within 500 m by distance, then the rest by distance. Beyond 500 m or &lsquo;Tidak dapat dicerap&rsquo; does not mean safe or dry: 304 of 428 facilities were never clearly observed (GFM exclusion mask). Select a row to show the facility on the map.</p>
+    <div class="tablewrap list"><table id="flist"></table></div>
+  </section>
+  <section>
     <h2>District summary</h2>
     <p class="note">Sorted by % within 500 m of an observed flooded pixel. Not within 500 m does not mean dry: 304 of 428 facilities were never clearly observed (GFM exclusion mask).</p>
     <div class="tablewrap"><table id="summary"></table></div>
@@ -59,7 +64,7 @@ const map = L.map('map', {scrollWheelZoom: false}).setView([5.3, 102.0], 8);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18,
   attribution: '© OpenStreetMap contributors · Flood: Copernicus EMS GFM · geoBoundaries'}).addTo(map);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let layer, feats = [];
+let layer, feats = [], listed = [];
 Promise.all(['data/summary.json', 'data/districts.geojson', 'data/facilities.geojson', 'data/district_summary.csv']
   .map(u => fetch(u).then(r => u.endsWith('csv') ? r.text() : r.json()))).then(([s, dist, fac, csv]) => {
   L.geoJSON(dist, {style: {color: '#102f40', weight: 1, fill: false}}).addTo(map);
@@ -92,7 +97,20 @@ function draw() {
   const n = sel.filter(f => f.properties.within_500m).length;
   document.getElementById('count').textContent = `${sel.length} shown · ${n} within 500 m`;
   if (d && sel.length) map.fitBounds(layer.getBounds(), {padding: [20, 20], maxZoom: 12});
+  const P = m => m.feature.properties;
+  listed = layer.getLayers().sort((a, b) => P(a).dist_m - P(b).dist_m || P(a).name.localeCompare(P(b).name));
+  document.getElementById('flist').innerHTML = '<thead><tr>' +
+    ['Facility', 'Type', 'District', 'Status', 'Nearest flooded pixel (m)'].map(h => `<th scope="col">${h}</th>`).join('') +
+    '</tr></thead><tbody>' + listed.map((m, i) => { const p = P(m);
+      return `<tr data-i="${i}"><td><button type="button">${esc(p.name)}</button></td><td>${esc(p.group)}</td>` +
+        `<td>${esc(p.district)}</td><td>${esc(label[cls(p)])}</td><td>${esc(p.dist_m.toLocaleString())}</td></tr>`; }).join('') + '</tbody>';
 }
+document.getElementById('flist').addEventListener('click', e => {
+  const tr = e.target.closest('tr[data-i]'); if (!tr) return;
+  const m = listed[tr.dataset.i];
+  map.setView(m.getLatLng(), Math.max(map.getZoom(), 14)); m.openPopup();
+  map.getContainer().scrollIntoView({block: 'center'});
+});
 const legend = L.control({position: 'bottomright'});
 legend.onAdd = () => { const div = L.DomUtil.create('div', 'legend');
   div.innerHTML = Object.keys(C).map(k => `<div><i style="background:${C[k]}"></i>${label[k]}</div>`).join('') +

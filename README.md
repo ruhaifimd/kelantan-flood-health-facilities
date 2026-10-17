@@ -25,7 +25,7 @@ Corrections are applied from [`scripts/overrides.csv`](scripts/overrides.csv) (s
 
 ## Files
 - `data/facilities.geojson` – per facility: name, type, district, lat/lon, `in_flood`, `dist_m`, `within_500m`
-- `data/district_summary.csv`, `data/dropped.csv`, `data/gfm_scenes.csv`, `data/flood_extent_gfm_2024.tif` (1 flooded, 0 dry, 255 no data)
+- `data/district_summary.csv`, `data/dropped.csv`, `data/gfm_scenes.csv`, `data/flood_extent_gfm_2024.tif` (1 flooded, 0 no flood detected, 255 no data)
 - `scripts/overrides.csv` – documented corrections; `scripts/pipeline.py` – rebuilds `data/` (`python scripts/pipeline.py`); `scripts/check.py` – assert spot-check of 7 facilities
 - `methods.html` – method, overrides, validation, dropped records, limitations
 
