@@ -1,16 +1,24 @@
-body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#102f40;background:#f6f8f9}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#102f40;background:#f6f8f9}
 header{background:#102f40;color:#fff;padding:16px 20px}
+h1,h2,h3,.stats b{font-family:"Space Grotesk",system-ui,sans-serif}
 header h1{margin:0;font-size:1.4rem}
 header a{color:#7fd6d7}
 .sub{margin:4px 0}
 .disclaimer{margin:8px 0 0;padding:6px 10px;border-left:4px solid #087e80;background:#1b4458;font-size:.9rem}
 main{max-width:1200px;margin:0 auto;padding:12px 16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px}
-select{font:inherit;padding:6px;border:1px solid #087e80;border-radius:4px;min-height:36px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:8px}
+.controls label{display:flex;align-items:center;gap:6px;min-height:44px}
+.chk input{width:20px;height:20px;margin:0;accent-color:#087e80}
+select,.controls button{font:inherit;padding:6px 10px;border:1px solid #087e80;border-radius:4px;min-height:44px;background:#fff;color:#102f40}
+.controls button{color:#087e80;cursor:pointer}
+select:focus-visible,.controls button:focus-visible,.chk input:focus-visible{outline:3px solid #087e80;outline-offset:2px}
+.stats{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 10px;color:#33505f;font-size:.9rem}
+.stats b{font-size:1.3rem;color:#102f40;margin-right:2px}
 #map{height:70vh;min-height:380px;border:1px solid #c9d4da;border-radius:6px}
 .legend{background:#fff;padding:8px 10px;border-radius:4px;box-shadow:0 1px 4px #0004;font-size:12px;line-height:1.6}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid #fff}
-.legend i.sq{border-radius:0;background:#1f6fc8;opacity:.8}
+.dot{display:inline-block;flex:none;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-sizing:border-box;background:var(--c)}
+.dot.excl{background:none;border:1.5px dashed var(--c)}
+.legend i.sq{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:0;background:#1f6fc8;opacity:.8}
 h2{font-size:1.15rem;margin-top:24px}
 .note{font-size:.9rem;color:#33505f}
 a{color:#087e80}
@@ -22,7 +30,7 @@ th{background:#087e80;color:#fff}
 tbody tr:last-child{font-weight:600}
 footer{max-width:1200px;margin:24px auto;padding:0 16px 24px;font-size:.85rem;color:#33505f}
 article{max-width:820px;margin:0 auto;padding:12px 16px}
-@media (max-width:600px){header h1{font-size:1.15rem}#map{height:60vh}.legend{font-size:11px;padding:6px}}
+@media (max-width:600px){header h1{font-size:1.15rem}.controls{flex-direction:column;align-items:stretch}.controls label{justify-content:space-between}.controls select{flex:1;max-width:70%}.chk{justify-content:flex-start!important}#map{height:60vh}.legend{font-size:11px;padding:6px}}
 .srcgrid{display:grid;align-items:start;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
 .src{background:#fff;border:1px solid #c9d4da;border-top:4px solid #087e80;border-radius:6px;padding:0 14px;font-size:.9rem;overflow-wrap:anywhere}
 .src h3{margin:0;font-size:1rem;color:#102f40}
@@ -42,3 +50,6 @@ article{max-width:820px;margin:0 auto;padding:12px 16px}
 .list tbody tr:last-child{font-weight:400}
 .list button{font:inherit;color:#087e80;background:none;border:0;padding:0;margin:0;min-height:44px;text-align:left;text-decoration:underline;cursor:pointer}
 .list button:focus-visible{outline:3px solid #087e80;outline-offset:2px}
+.list thead th{position:sticky;top:0;z-index:1}
+.list th:last-child,.list td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;padding:2px 10px 2px 8px;border:1px solid #dde5e9;border-radius:999px;background:#f6f8f9;font-size:.85rem}

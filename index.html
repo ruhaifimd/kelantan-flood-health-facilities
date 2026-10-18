@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kelantan Flood Exposure of Health Facilities</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,15 +16,17 @@
   <p class="disclaimer" role="note">Exploratory analysis using public data. Not an official Ministry of Health Malaysia risk assessment.</p>
 </header>
 <main>
-  <section class="controls" aria-label="Filters">
+  <form class="controls" aria-label="Filters">
     <label>Type <select id="ftype"><option value="">All types</option></select></label>
     <label>District <select id="fdist"><option value="">All districts</option></select></label>
-    <span id="count" aria-live="polite"></span>
-  </section>
+    <label class="chk"><input type="checkbox" id="fobs"> Clearly observed only</label>
+    <button type="reset">Reset filters</button>
+  </form>
+  <p id="count" class="stats" aria-live="polite"></p>
   <div id="map" role="region" aria-label="Map of facilities and flood extent"></div>
   <section>
     <h2>Facilities to prioritise for preparedness review</h2>
-    <p class="note">Listed for field verification of flood preparedness, not a risk ranking. Order: inside the observed flood extent, then within 500 m by distance, then the rest by distance. Beyond 500 m or &lsquo;Tidak dapat dicerap&rsquo; does not mean safe or dry: 304 of 428 facilities were never clearly observed (GFM exclusion mask). Select a row to show the facility on the map.</p>
+    <p class="note">Listed for field verification of flood preparedness, not a risk ranking. Order: inside the observed flood extent, then within 500 m by distance, then the rest by distance. Beyond 500 m or &lsquo;Tidak dapat dicerap&rsquo; does not mean safe or dry: 304 of 428 facilities were never clearly observed (GFM exclusion mask). The list, map and counts follow the Type, District and &lsquo;Clearly observed only&rsquo; filters. Select a row to show the facility on the map.</p>
     <div class="tablewrap list"><table id="flist"></table></div>
   </section>
   <section>
@@ -63,6 +67,7 @@ const label = {in: 'Inside observed flood extent', near: 'Within 500 m of flood'
 const map = L.map('map', {scrollWheelZoom: false}).setView([5.3, 102.0], 8);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18,
   attribution: '© OpenStreetMap contributors · Flood: Copernicus EMS GFM · geoBoundaries'}).addTo(map);
+const dot = k => `<i class="dot ${k}" style="--c:${C[k]}"></i>`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let layer, feats = [], listed = [];
 Promise.all(['data/summary.json', 'data/districts.geojson', 'data/facilities.geojson', 'data/district_summary.csv']
@@ -73,7 +78,8 @@ Promise.all(['data/summary.json', 'data/districts.geojson', 'data/facilities.geo
   const opts = (id, k) => [...new Set(feats.map(f => f.properties[k]))].sort()
     .forEach(v => document.getElementById(id).add(new Option(v, v)));
   opts('ftype', 'group'); opts('fdist', 'district');
-  ['ftype', 'fdist'].forEach(id => document.getElementById(id).onchange = draw);
+  const form = document.querySelector('.controls');
+  form.onchange = draw; form.onreset = () => setTimeout(draw); // reset event fires before values clear
   draw();
   const rows = csv.trim().split(/\r?\n/).map(l => l.match(/("[^"]*"|[^,]+)/g).map(c => c.replace(/"/g, '')));
   const keep = [0, 1, 2, 3, 4, 5, 7, 9, 10, 11];
@@ -82,11 +88,13 @@ Promise.all(['data/summary.json', 'data/districts.geojson', 'data/facilities.geo
     '</tr></thead><tbody>' + rows.slice(1).map(r => '<tr>' + keep.map(i => `<td>${esc(r[i])}</td>`).join('') + '</tr>').join('') + '</tbody>';
 });
 function draw() {
-  const t = ftype.value, d = fdist.value;
-  const sel = feats.filter(f => (!t || f.properties.group === t) && (!d || f.properties.district === d));
+  const t = ftype.value, d = fdist.value, o = fobs.checked;
+  const sel = feats.filter(f => (!t || f.properties.group === t) && (!d || f.properties.district === d) && (!o || f.properties.observed));
   if (layer) map.removeLayer(layer);
   layer = L.geoJSON({type: 'FeatureCollection', features: sel}, {
-    pointToLayer: (f, ll) => L.circleMarker(ll, {radius: 5, weight: 1, color: '#fff', fillOpacity: 0.95, fillColor: C[cls(f.properties)]}),
+    pointToLayer: (f, ll) => L.circleMarker(ll, cls(f.properties) === 'excl'
+      ? {radius: 5, weight: 1.5, color: C.excl, dashArray: '2 2', fillColor: C.excl, fillOpacity: 0.08}
+      : {radius: 5, weight: 1, color: '#fff', fillOpacity: 0.95, fillColor: C[cls(f.properties)]}),
     onEachFeature: (f, l) => { const p = f.properties;
       l.bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.group)} (${esc(p.type)})<br>District: ${esc(p.district)}<br>` +
         `${label[cls(p)]}<br>Nearest flooded pixel: ${p.dist_m.toLocaleString()} m` +
@@ -94,8 +102,10 @@ function draw() {
         (p.coord_source !== 'source' ? `<br>Coordinates: ${esc(p.coord_source)}` : '') +
         (p.note ? `<br>Note: ${esc(p.note)}` : '')); }
   }).addTo(map);
-  const n = sel.filter(f => f.properties.within_500m).length;
-  document.getElementById('count').textContent = `${sel.length} shown · ${n} within 500 m`;
+  const n = k => sel.filter(f => f.properties[k]).length;
+  document.getElementById('count').innerHTML = [[sel.length, 'Shown'], [n('in_flood'), 'Inside extent'],
+    [n('within_500m'), 'Within 500 m'], [n('observed'), 'Clearly observed']].map(([v, l]) => `<span><b>${v}</b> ${l}</span>`).join(' ');
+  document.querySelectorAll('.legend [data-k]').forEach(e => e.textContent = `(${sel.filter(f => cls(f.properties) === e.dataset.k).length})`);
   if (d && sel.length) map.fitBounds(layer.getBounds(), {padding: [20, 20], maxZoom: 12});
   const P = m => m.feature.properties;
   listed = layer.getLayers().sort((a, b) => P(a).dist_m - P(b).dist_m || P(a).name.localeCompare(P(b).name));
@@ -103,7 +113,7 @@ function draw() {
     ['Facility', 'Type', 'District', 'Status', 'Nearest flooded pixel (m)'].map(h => `<th scope="col">${h}</th>`).join('') +
     '</tr></thead><tbody>' + listed.map((m, i) => { const p = P(m);
       return `<tr data-i="${i}"><td><button type="button">${esc(p.name)}</button></td><td>${esc(p.group)}</td>` +
-        `<td>${esc(p.district)}</td><td>${esc(label[cls(p)])}</td><td>${esc(p.dist_m.toLocaleString())}</td></tr>`; }).join('') + '</tbody>';
+        `<td>${esc(p.district)}</td><td><span class="pill">${dot(cls(p))}${esc(label[cls(p)])}</span></td><td>${esc(p.dist_m.toLocaleString())}</td></tr>`; }).join('') + '</tbody>';
 }
 document.getElementById('flist').addEventListener('click', e => {
   const tr = e.target.closest('tr[data-i]'); if (!tr) return;
@@ -113,7 +123,7 @@ document.getElementById('flist').addEventListener('click', e => {
 });
 const legend = L.control({position: 'bottomright'});
 legend.onAdd = () => { const div = L.DomUtil.create('div', 'legend');
-  div.innerHTML = Object.keys(C).map(k => `<div><i style="background:${C[k]}"></i>${label[k]}</div>`).join('') +
+  div.innerHTML = Object.keys(C).map(k => `<div>${dot(k)}${label[k]} <span data-k="${k}"></span></div>`).join('') +
     '<div><i class="sq"></i>Observed flood extent (GFM)</div>'; return div; };
 legend.addTo(map);
 </script>
